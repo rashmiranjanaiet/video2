@@ -2,9 +2,8 @@ services:
   - type: web
     name: yt-dlp-downloader
     runtime: python
-    rootDir: yt-dlp-master
     plan: free
-    buildCommand: python -m pip install --upgrade pip && python -m pip install -e ".[default]"
+    buildCommand: python -m pip install --upgrade pip && python -m pip install -r requirements.txt && python -m pip install -e ".[default]"
     startCommand: python local_downloader_server.py
     healthCheckPath: /api/health
     envVars:
