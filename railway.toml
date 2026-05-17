@@ -1,0 +1,14 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "cd yt-dlp-master && python -m pip install --upgrade pip && python -m pip install -e \".[default]\""
+watchPatterns = ["yt-dlp-master/**", "railway.toml"]
+
+[build.nixpacksPlan]
+providers = ["python"]
+
+[deploy]
+startCommand = "cd yt-dlp-master && python local_downloader_server.py"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

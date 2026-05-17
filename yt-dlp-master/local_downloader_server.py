@@ -21,12 +21,14 @@ from yt_dlp.version import __version__
 
 ROOT = Path(__file__).resolve().parent
 IS_RENDER = os.environ.get('RENDER') == 'true'
-HOST = os.environ.get('HOST') or ('0.0.0.0' if IS_RENDER else '127.0.0.1')
+IS_RAILWAY = bool(os.environ.get('RAILWAY_SERVICE_ID') or os.environ.get('RAILWAY_ENVIRONMENT_ID'))
+IS_HOSTED = IS_RENDER or IS_RAILWAY
+HOST = os.environ.get('HOST') or ('0.0.0.0' if IS_HOSTED else '127.0.0.1')
 PORT = int(os.environ.get('PORT') or '8000')
 ACCESS_TOKEN = os.environ.get('DOWNLOAD_TOKEN', '').strip()
-REQUIRE_TOKEN = IS_RENDER or os.environ.get('REQUIRE_DOWNLOAD_TOKEN', '').lower() in {'1', 'true', 'yes'} or bool(ACCESS_TOKEN)
+REQUIRE_TOKEN = IS_HOSTED or os.environ.get('REQUIRE_DOWNLOAD_TOKEN', '').lower() in {'1', 'true', 'yes'} or bool(ACCESS_TOKEN)
 
-DEFAULT_DOWNLOAD_DIR = Path('/tmp/yt-dlp-downloads') if IS_RENDER else ROOT / 'local-downloads'
+DEFAULT_DOWNLOAD_DIR = Path('/tmp/yt-dlp-downloads') if IS_HOSTED else ROOT / 'local-downloads'
 DOWNLOAD_DIR_VALUE = os.environ.get('DOWNLOAD_DIR')
 if DOWNLOAD_DIR_VALUE:
     configured_download_dir = Path(DOWNLOAD_DIR_VALUE).expanduser()
@@ -286,6 +288,7 @@ class LocalDownloaderHandler(BaseHTTPRequestHandler):
                 'version': __version__,
                 'auth_required': REQUIRE_TOKEN,
                 'auth_configured': bool(ACCESS_TOKEN),
+                'environment': 'railway' if IS_RAILWAY else 'render' if IS_RENDER else 'local',
                 'allowed_hosts': sorted(ALLOWED_HOSTS),
                 'max_download_mb': MAX_DOWNLOAD_MB,
                 'downloads_dir': str(DOWNLOAD_DIR),
