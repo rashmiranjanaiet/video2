@@ -1,7 +1,6 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
-watchPatterns = ["yt-dlp-master/**", "Dockerfile", ".dockerignore", "railway.toml", "requirements.txt", "pyproject.toml", "local_downloader_server.py"]
 
 [deploy]
 healthcheckPath = "/api/health"

@@ -1,0 +1,12 @@
+.git
+__pycache__/
+*.pyc
+*.egg-info/
+yt-dlp-master/__pycache__/
+yt-dlp-master/**/__pycache__/
+yt-dlp-master/dist/
+yt-dlp-master/local-downloads/
+yt-dlp-master/server.*.log
+yt-dlp-master/tmp/
+yt-dlp-master/.venv/
+yt-dlp-master/venv/

@@ -1,0 +1,11 @@
+.git
+__pycache__/
+**/__pycache__/
+*.pyc
+*.egg-info/
+dist/
+local-downloads/
+server.*.log
+tmp/
+.venv/
+venv/
