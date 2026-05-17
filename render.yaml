@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: yt-dlp-downloader
+    runtime: python
+    rootDir: yt-dlp-master
+    plan: free
+    buildCommand: python -m pip install --upgrade pip && python -m pip install -e ".[default]"
+    startCommand: python local_downloader_server.py
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DOWNLOAD_TOKEN
+        sync: false
+      - key: REQUIRE_DOWNLOAD_TOKEN
+        value: "true"
+      - key: DOWNLOAD_DIR
+        value: /tmp/yt-dlp-downloads
+      - key: ALLOWED_HOSTS
+        value: youtube.com,youtu.be,youtube-nocookie.com
+      - key: MAX_ACTIVE_DOWNLOADS
+        value: "1"
+      - key: MAX_DOWNLOAD_MB
+        value: "512"
