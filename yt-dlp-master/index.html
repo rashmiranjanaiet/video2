@@ -357,7 +357,7 @@
 
           <div>
             <label for="accessToken">Access token</label>
-            <input id="accessToken" name="token" type="password" placeholder="Required on Render" autocomplete="current-password">
+            <input id="accessToken" name="token" type="password" placeholder="Required on hosted deploy" autocomplete="current-password">
           </div>
 
           <div class="form-grid">
@@ -536,9 +536,9 @@
         folderLink.href = withToken('local-downloads/');
 
         if (authRequired && !data.auth_configured) {
-          setMessage('DOWNLOAD_TOKEN is missing on the server.', true);
+          setMessage('DOWNLOAD_TOKEN is missing in the server variables.', true);
         } else if (authRequired && !currentToken()) {
-          setMessage('Enter your Render access token, then paste the YouTube link.');
+          setMessage('Enter your access token, then paste the YouTube link.');
         }
       } catch (error) {
         serverStatus.textContent = 'Server offline';

@@ -16,6 +16,7 @@ MAX_DOWNLOAD_MB=512
 ```
 
 Do not set `PORT`; Railway provides it automatically.
+The exact same value you put in `DOWNLOAD_TOKEN` must be pasted into the page's **Access token** field.
 
 ## Deploy Notes
 

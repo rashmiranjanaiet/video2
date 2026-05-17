@@ -57,6 +57,14 @@ JOBS: dict[str, dict] = {}
 JOBS_LOCK = threading.Lock()
 
 
+def environment_name() -> str:
+    if IS_RAILWAY:
+        return 'Railway'
+    if IS_RENDER:
+        return 'Render'
+    return 'local'
+
+
 def json_bytes(payload: dict, status: int = HTTPStatus.OK) -> tuple[bytes, int, str]:
     return json.dumps(payload, ensure_ascii=False).encode('utf-8'), status, 'application/json; charset=utf-8'
 
@@ -99,7 +107,7 @@ def active_download_count() -> int:
 
 
 def list_downloads() -> list[dict]:
-    DOWNLOAD_DIR.mkdir(exist_ok=True)
+    DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
     files = []
     for path in DOWNLOAD_DIR.iterdir():
         if not path.is_file():
@@ -160,7 +168,7 @@ def run_download(job_id: str) -> None:
     with JOBS_LOCK:
         job = dict(JOBS[job_id])
 
-    DOWNLOAD_DIR.mkdir(exist_ok=True)
+    DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
     before = set(DOWNLOAD_DIR.iterdir())
     output_template = str(DOWNLOAD_DIR / '%(title).200B [%(id)s].%(ext)s')
     selected_format = 'best[ext=mp4]/best' if job['format'] == 'mp4' else 'best'
@@ -269,7 +277,7 @@ class LocalDownloaderHandler(BaseHTTPRequestHandler):
 
         if not ACCESS_TOKEN:
             self.send_json({
-                'error': 'Server access token is not configured. Set DOWNLOAD_TOKEN on Render.',
+                'error': f'Server access token is not configured. Set DOWNLOAD_TOKEN in {environment_name()} variables.',
             }, HTTPStatus.SERVICE_UNAVAILABLE)
             return False
 
@@ -288,7 +296,7 @@ class LocalDownloaderHandler(BaseHTTPRequestHandler):
                 'version': __version__,
                 'auth_required': REQUIRE_TOKEN,
                 'auth_configured': bool(ACCESS_TOKEN),
-                'environment': 'railway' if IS_RAILWAY else 'render' if IS_RENDER else 'local',
+                'environment': environment_name().lower(),
                 'allowed_hosts': sorted(ALLOWED_HOSTS),
                 'max_download_mb': MAX_DOWNLOAD_MB,
                 'downloads_dir': str(DOWNLOAD_DIR),
@@ -393,7 +401,7 @@ class LocalDownloaderHandler(BaseHTTPRequestHandler):
 
 def main() -> None:
     os.chdir(ROOT)
-    DOWNLOAD_DIR.mkdir(exist_ok=True)
+    DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
     server = ThreadingHTTPServer((HOST, PORT), LocalDownloaderHandler)
     print(f'yt-dlp local downloader running at http://{HOST}:{PORT}/')
     server.serve_forever()
